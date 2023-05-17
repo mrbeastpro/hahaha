@@ -1,0 +1,32 @@
+local Functions = {}
+for i,v in pairs(getreg()) do
+   if type(v) == "function" then
+       for i2,v2 in pairs(getfenv(v)) do
+           if type(v2) == "function" then
+               Functions[tostring(i2)] = v2
+           end
+       end
+   end
+end
+
+function GetLocalWeapon()
+   return getfenv(Functions.usethatgun).gun
+end
+
+game:GetService("RunService"):BindToRenderStep("gunmodsarecool", 1, function()
+   getfenv(Functions.usethatgun).currentspread = 0 -- NoSpread
+
+   getfenv(Functions.usethatgun).recoil = 0 -- NoRecoil
+
+   if GetLocalWeapon() ~= "none" and GetLocalWeapon():FindFirstChild("Ammo") then -- Inf Ammo
+       debug.setupvalue(Functions["updateInventory"], 3, GetLocalWeapon():FindFirstChild("Ammo").Value)
+   end
+   
+   if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Spawned") and game:GetService("UserInputService"):IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then -- RapidFire
+       if game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").Health ~= 0 and game.Players.LocalPlayer.Character:FindFirstChild("Spawned") then
+           pcall(function()
+               Functions.firebullet(true)
+           end)
+       end
+   end
+end)
